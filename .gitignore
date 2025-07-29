@@ -1,3 +1,8 @@
+# Manually excluded files
+
+talos-os/*.yaml
+talos-os/talosconfig
+
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,windows,visualstudiocode,helm,terraform
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,macos,windows,visualstudiocode,helm,terraform
 
