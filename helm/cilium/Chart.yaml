@@ -1,0 +1,10 @@
+---
+apiVersion: v2
+name: cilium
+description: Chart for deploying Cilium with a few customizations for Talos OS
+type: application
+version: 0.1.0
+dependencies:
+  - name: cilium
+    version: 1.18.0
+    repository: "https://helm.cilium.io/"
