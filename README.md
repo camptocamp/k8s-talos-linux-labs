@@ -124,17 +124,19 @@ Machine configuration patches are used to modify the machine configuration files
   helm repo add cilium https://helm.cilium.io/
   helm template cilium ./helm/cilium --namespace kube-system > cilium-template.yaml
   ```
-- The content of these manifests is then used to create the `cilium.yaml` patch and goes under the contents of the `inlineManifests` key in the patch file.
+- The content of these manifests was then put in the `extra-manifests.yaml` patch file under the contents of the `inlineManifests` key.
 - Then we applied the patches to the machine configuration files using the following commands:
   ```bash
-  talosctl machineconfig patch controlplane.yaml --patch @patches/network.yaml --patch @patches/tpm-disk-encryption.yaml --patch @patches/metrics-server.yaml --patch @patches/cilium.yaml --output controlplane.yaml
+  talosctl machineconfig patch controlplane.yaml --patch @patches/network.yaml --patch @patches/tpm-disk-encryption.yaml --patch @patches/metrics-server.yaml --patch @patches/cilium.yaml --patch @patches/extra-manifests.yaml --output controlplane.yaml
   ```
 - We needed to apply the patches to both `controlplane.yaml` and `worker.yaml` files, with the exception of the `cilium.yaml` patch, which is only applied to the control plane nodes.
   ```bash
-  talosctl machineconfig patch worker.yaml --patch @patches/network.yaml --patch @patches/tpm-disk-encryption.yaml --output worker.yaml
+  talosctl machineconfig patch worker.yaml --patch @patches/network.yaml --patch @patches/tpm-disk-encryption.yaml --patch @patches/metrics-server.yaml --patch @patches/bgp-node-labels.yaml --output worker.yaml
   ```
 
 ### Install Talos OS on the nodes
+
+- After booting each node into maintenance mode, we removed the Talos ISO from the VM, then we proceeded to install Talos OS.
 
 - For each **control plane node**, we applied the Talos OS configuration using the following commands:
   ```bash
@@ -151,7 +153,7 @@ Machine configuration patches are used to modify the machine configuration files
 
 - For each **worker node**, we applied the Talos OS configuration using the following commands:
   ```bash
-  WORKER_IP=("192.168.80.21")
+  WORKER_IP=("192.168.80.21" "192.168.80.22" "192.168.80.23")
   for ip in "${WORKER_IP[@]}"; do
     echo "=== Applying configuration to node $ip ==="
     talosctl apply-config --insecure \

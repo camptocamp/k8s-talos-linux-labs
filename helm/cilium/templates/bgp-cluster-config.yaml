@@ -1,0 +1,22 @@
+---
+
+# BGP Cluster Configuration
+# Defines the BGP settings for the Cilium cluster, including its local ASN and its peer (pfSense).
+
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPClusterConfig
+metadata:
+  name: cilium-bgp-cluster-config
+spec:
+  nodeSelector:
+    matchLabels:
+      bgp: "true"
+  bgpInstances:
+  - name: "bgp-k8s-cilium"
+    localASN: 64520 # Cilium ASN (we use the same as pfSense, because we consider both to be part of the same autonomous system)
+    peers:
+    - name: "pfSense-peer"
+      peerASN: 64520 # pfSense ASN
+      peerAddress: 192.168.80.1  # pfSense RID
+      peerConfigRef:
+        name: "cilium-bgp-peer"

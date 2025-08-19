@@ -1,0 +1,21 @@
+---
+
+# BGP Advertisement
+# Defines which Kubernetes services should be advertised via BGP.
+
+apiVersion: cilium.io/v2alpha1
+kind: CiliumBGPAdvertisement
+metadata:
+  name: cilium-bgp-advertisements
+  labels:
+    advertise: bgp # The label that is matched by the peer configuration.
+spec:
+  advertisements:
+    - advertisementType: "Service"
+      service:
+        addresses:
+          - LoadBalancerIP
+      selector:
+        matchExpressions:
+          # This is a generic expression to make the advertisement select ALL the LoadBalancerIP services.
+          - { key: somekey, operator: NotIn, values: [ never-used-value ] }

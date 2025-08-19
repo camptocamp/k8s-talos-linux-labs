@@ -1,8 +1,13 @@
 ---
-apiVersion: "cilium.io/v2"
+
+# LoadBalancer IPAM
+# Configures the range of IPs assigned to Kubernetes LoadBalancer services.
+
+apiVersion: cilium.io/v2
 kind: CiliumLoadBalancerIPPool
 metadata:
-  name: "global-lb-ip-pool"
+  name: cilium-global-lb-ip-pool
 spec:
   blocks:
-  - cidr: "192.168.180.0/24"
+  - start: 192.168.180.101
+    stop: 192.168.180.150

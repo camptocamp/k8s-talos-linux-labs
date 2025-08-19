@@ -1,0 +1,29 @@
+---
+# pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-nginx
+  labels:
+    app: simple-nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+
+---
+# service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-nginx-lb
+spec:
+  selector:
+    app: simple-nginx
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
