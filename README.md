@@ -1,34 +1,34 @@
-# k8s-talos-os-labs
+# k8s-talos-linux-labs
 
-This repository contains the files and documentation related to Camptocamp's R&D project to gain experience with Talos OS deployments.
+This repository contains the files and documentation related to Camptocamp's R&D project to gain experience with Talos Linux deployments.
 
 > [!NOTE]
 > Although we tried to keep good documentation and good practices in mind, do not consider this repository as a production-ready solution. It is meant for educational purposes and to share knowledge.
 >
-> Additionally, the documentation is not a complete guide/tutorial, but rather a collection of steps and tips to help us document our experience with Talos OS.
+> Additionally, the documentation is not a complete guide/tutorial, but rather a collection of steps and tips to help us document our experience with Talos Linux.
 
 ## Table of contents
 
-- [k8s-talos-os-labs](#k8s-talos-os-labs)
+- [k8s-talos-linux-labs](#k8s-talos-linux-labs)
   - [Table of contents](#table-of-contents)
   - [Infrastructure configuration](#infrastructure-configuration)
     - [Proxmox VE preparations](#proxmox-ve-preparations)
     - [Network configuration](#network-configuration)
-  - [Talos OS installation](#talos-os-installation)
+  - [Talos Linux installation](#talos-linux-installation)
     - [Requirements](#requirements)
     - [Download image](#download-image)
     - [Creation of a template VM](#creation-of-a-template-vm)
     - [Creation of the basic machine configuration](#creation-of-the-basic-machine-configuration)
     - [Understanding the nodes](#understanding-the-nodes)
     - [Create machine configuration patches](#create-machine-configuration-patches)
-    - [Install Talos OS on the nodes](#install-talos-os-on-the-nodes)
+    - [Install Talos Linux on the nodes](#install-talos-linux-on-the-nodes)
 
 ## Infrastructure configuration
 
-This document outlines the steps to configure the infrastructure for Talos OS deployments using Proxmox VE.
+This document outlines the steps to configure the infrastructure for Talos Linux deployments using Proxmox VE.
 
 > [!NOTE]
-> We chose Proxmox VE as our hypervisor for this project, in order to ease the management of virtual machines and provide a flexible environment for testing Talos OS. Choose whichever hypervisor best fits your needs and environment or deploy Talos OS on bare metal.
+> We chose Proxmox VE as our hypervisor for this project, in order to ease the management of virtual machines and provide a flexible environment for testing Talos Linux. Choose whichever hypervisor best fits your needs and environment or deploy Talos Linux on bare metal.
 
 ### Proxmox VE preparations
 
@@ -40,19 +40,19 @@ Notes pertaining to the Proxmox VE setup:
 
 ### Network configuration
 
-Notes related to the network configuration for Talos OS VMs:
+Notes related to the network configuration for Talos Linux VMs:
 
-- We decided to create a separate infrastructure network for the Talos OS machines, so we have deployed a VM with a firewall (pfSense) to manage the network.
+- We decided to create a separate infrastructure network for the Talos Linux machines, so we have deployed a VM with a firewall (pfSense) to manage the network.
 - The firewall VM has two network interfaces: one connected to the `vmbr0` bridge (the public network) and a new bridge `vmbr1` for the private network.
 - The firewall VM is connected to the internet via `vmbr0`, with an Elastic IP address manually assigned to it.
 - A WireGuard VPN server is also running on the firewall VM, allowing secure access to the private network from outside.
-- The Talos OS VMs only have `vmbr1` as their network interface.
-- The firewall VM provides DHCP and DNS services for the Talos OS VMs, along with NAT for internet access.
-- The Talos OS VMs are configured to use the firewall VM as their gateway and do not have a public IP address. They do not communicate with the Proxmox VE host either.
-- The Talos OS VMs have a static IP address assigned by the firewall VM's DHCP server.
-- A DNS record is automatically created for each Talos OS VM in the firewall VM's DNS server, allowing them to be accessed by their hostname. An additional DNS record that points to all the control plane nodes is created ([see documentation](https://www.talos.dev/v1.10/introduction/prodnotes/#dns-records) for more information).
+- The Talos Linux VMs only have `vmbr1` as their network interface.
+- The firewall VM provides DHCP and DNS services for the Talos Linux VMs, along with NAT for internet access.
+- The Talos Linux VMs are configured to use the firewall VM as their gateway and do not have a public IP address. They do not communicate with the Proxmox VE host either.
+- The Talos Linux VMs have a static IP address assigned by the firewall VM's DHCP server.
+- A DNS record is automatically created for each Talos Linux VM in the firewall VM's DNS server, allowing them to be accessed by their hostname. An additional DNS record that points to all the control plane nodes is created ([see documentation](https://www.talos.dev/v1.10/introduction/prodnotes/#dns-records) for more information).
 
-## Talos OS installation
+## Talos Linux installation
 
 ### Requirements
 
@@ -60,16 +60,16 @@ Follow the official documentation for installing `talosctl` on your local machin
 
 ### Download image
 
-- Sidero Labs (creators and maintainers of Talos OS) provide a way to download customized images of Talos OS, containing additional tools that can be useful for your deployments. For example, since we are using Proxmox VE, we can download an image that contains the `qemu-guest-agent` package.
-- We've downloaded the latest Talos OS image from the [Talos OS Image Factory](https://factory.talos.dev). [This link](https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fqemu-guest-agent&platform=metal&secureboot=true&target=metal&version=1.10.5) will give the image we used.
+- Sidero Labs (creators and maintainers of Talos Linux) provide a way to download customized images of Talos Linux, containing additional tools that can be useful for your deployments. For example, since we are using Proxmox VE, we can download an image that contains the `qemu-guest-agent` package.
+- We've downloaded the latest Talos Linux image from the [Talos Linux Image Factory](https://factory.talos.dev). [This link](https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fqemu-guest-agent&platform=metal&secureboot=true&target=metal&version=1.10.5) will give the image we used.
 
 ### Creation of a template VM
 
 - In Proxmox VE, we created a new VM with the following settings:
-  - Name: `talos-os-template`
+  - Name: `talos-linux-template`
   - OS Type: `Linux`
   - Version: `6.x - 2.6 Kernel`
-  - CD/DVD Drive: *use Talos OS image ISO you uploaded to Proxmox VE*
+  - CD/DVD Drive: *use Talos Linux image ISO you uploaded to Proxmox VE*
   - System:
     - BIOS: `OVMF (UEFI)`
     - TPM: `Enabled`
@@ -80,15 +80,15 @@ Follow the official documentation for installing `talosctl` on your local machin
   - Memory: `4 GB`
   - Network: `virtio` and `vmbr1` bridge (the private network)
 - The VM is not started and simply converted to a template.
-- **The template is then cloned as needed for each Talos OS node.**
+- **The template is then cloned as needed for each Talos Linux node.**
 
 ### Creation of the basic machine configuration
 
-Before starting the Talos OS nodes, we needed to create a machine configuration file that defines the cluster and node settings.
+Before starting the Talos Linux nodes, we needed to create a machine configuration file that defines the cluster and node settings.
 
 - We first generated all the necessary certificates and secrets:
   ```bash
-  cd talos-os # Folder in this repository where we keep Talos OS related files (excluded with .gitignore).
+  cd talos # Folder in this repository where we keep Talos Linux related files (excluded with .gitignore).
   talosctl gen secrets -o secrets.yaml
   ```
 
@@ -116,9 +116,9 @@ These commands are useful to check if the nodes have the configurations you expe
 
 ### Create machine configuration patches
 
-Machine configuration patches are used to modify the machine configuration files generated by `talosctl gen config`. They allow you to customize the configuration of your Talos OS, and can be useful to separate from the others that contain sensitive information.
+Machine configuration patches are used to modify the machine configuration files generated by `talosctl gen config`. They allow you to customize the configuration of your Talos Linux, and can be useful to separate from the others that contain sensitive information.
 
-- We created the patches on the folder `talos-os/patches/` in this repository.
+- We created the patches on the folder `talos/patches/` in this repository.
 - We had to create the manifests for Cilium using Helm:
   ```bash
   helm repo add cilium https://helm.cilium.io/
@@ -134,11 +134,11 @@ Machine configuration patches are used to modify the machine configuration files
   talosctl machineconfig patch worker.yaml --patch @patches/network.yaml --patch @patches/tpm-disk-encryption.yaml --patch @patches/metrics-server.yaml --patch @patches/bgp-node-labels.yaml --output worker.yaml
   ```
 
-### Install Talos OS on the nodes
+### Install Talos Linux on the nodes
 
-- After booting each node into maintenance mode, we removed the Talos ISO from the VM, then we proceeded to install Talos OS.
+- After booting each node into maintenance mode, we removed the Talos ISO from the VM, then we proceeded to install Talos Linux.
 
-- For each **control plane node**, we applied the Talos OS configuration using the following commands:
+- For each **control plane node**, we applied the Talos Linux configuration using the following commands:
   ```bash
   CONTROL_PLANE_IP=("192.168.80.11" "192.168.80.12" "192.168.80.13")
   for ip in "${CONTROL_PLANE_IP[@]}"; do
@@ -151,7 +151,7 @@ Machine configuration patches are used to modify the machine configuration files
   done
   ```
 
-- For each **worker node**, we applied the Talos OS configuration using the following commands:
+- For each **worker node**, we applied the Talos Linux configuration using the following commands:
   ```bash
   WORKER_IP=("192.168.80.21" "192.168.80.22" "192.168.80.23")
   for ip in "${WORKER_IP[@]}"; do
