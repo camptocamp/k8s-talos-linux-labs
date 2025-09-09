@@ -14,6 +14,7 @@ This repository contains the files and documentation related to Camptocamp's R&D
   - [Infrastructure configuration](#infrastructure-configuration)
     - [Proxmox VE preparations](#proxmox-ve-preparations)
     - [Network configuration](#network-configuration)
+    - [Architecture overview](#architecture-overview)
   - [Talos Linux installation](#talos-linux-installation)
     - [Requirements](#requirements)
     - [Download image](#download-image)
@@ -34,8 +35,8 @@ This document outlines the steps to configure the infrastructure for Talos Linux
 
 Notes pertaining to the Proxmox VE setup:
 
-- Created an Elastic Metal machine on Scaleway with Proxmox VE installed.
-- The Proxmox VE system has a public IP address, which is be used to access the Proxmox web interface, SSH into the host, etc.
+- We created an Elastic Metal machine on Scaleway with Proxmox VE installed.
+- The Proxmox VE system has a public IP address, which is be used to access the Proxmox VE web interface, SSH into the host, etc.
 - If you know how to use Proxmox VE, you can go ahead and further configure it as needed, namely locking things down with its firewall, adding 2FA to the web interface, etc.
 
 ### Network configuration
@@ -49,8 +50,12 @@ Notes related to the network configuration for Talos Linux VMs:
 - The Talos Linux VMs only have `vmbr1` as their network interface.
 - The firewall VM provides DHCP and DNS services for the Talos Linux VMs, along with NAT for internet access.
 - The Talos Linux VMs are configured to use the firewall VM as their gateway and do not have a public IP address. They do not communicate with the Proxmox VE host either.
-- The Talos Linux VMs have a static IP address assigned by the firewall VM's DHCP server.
-- A DNS record is automatically created for each Talos Linux VM in the firewall VM's DNS server, allowing them to be accessed by their hostname. An additional DNS record that points to all the control plane nodes is created ([see documentation](https://www.talos.dev/v1.10/introduction/prodnotes/#dns-records) for more information).
+- The Talos Linux VMs have a static IP address assigned by the DHCP server on the router VM.
+- A DNS record is automatically created for each Talos Linux VM in the DNS server running on the router VM, allowing them to be accessed by their hostname. An additional DNS record that points to all the control plane nodes is created manually ([see documentation](https://www.talos.dev/v1.10/introduction/prodnotes/#dns-records) for more information).
+
+### Architecture overview
+
+![Architecture overview](./images/architecture-scheme.png)
 
 ## Talos Linux installation
 
